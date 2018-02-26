@@ -28,6 +28,7 @@ player = {
      update: function(){
          if(keystate[upArrow]) this.y -=7;
          if(keystate[downArrow]) this.y +=7;
+         this.y = Math.max(Math.min(this.y,height-this.height),0);
      },
      draw: function(){
          ctx.fillRect(this.x,this.y,this.width,this.height);
@@ -45,6 +46,7 @@ ai = {
          //this allows the ai paddle to move to where the ball will land
          var destinationY = ball.y - (this.height - ball.side)*0.5;
          this.y += (destinationY-this.y) * 0.1;
+         this.y = Math.max(Math.min(this.y,height-this.height),0);
          
      },
      draw: function(){
@@ -58,6 +60,19 @@ ball = {
      vel:null,
      side:20,
      speed: 10,
+     
+     serve: function(side){
+         var r = Math.random();
+         this.x = side===1 ? player.x+player.width : ai.x - this.side;
+         this.y = (height - this.side)*r;
+         
+         var phi = 0.1*pi*(1-2*r);
+         this.vel = {
+             x: side*this.speed*Math.cos(phi),
+             y: this.speed*Math.sin(phi)
+         }
+         
+     },
      
      update: function(){
          this.x += this.vel.x;
@@ -102,12 +117,7 @@ ball = {
          
          //resets the ball to the middle of the field when the ball is scored
          if(this.x+this.side < 0 ||this.x > width){
-            ball.x = (width-ball.side)/2;
-            ball.y = (height-ball.side)/2;
-            ball.vel = {
-                x: (paddle===player ? 1 : -1)*ball.speed,
-                y: 0
-            };
+                this.serve(paddle===player ? 1 : -1);               
          }
          
      },
@@ -153,12 +163,7 @@ function init(){
     ai.x = width-(player.width+ai.width);
     ai.y = (height-ai.height)/2;
     
-    ball.x = (width-ball.side)/2;
-    ball.y = (height-ball.side)/2;
-    ball.vel = {
-        x: ball.speed,
-        y: 0
-    };
+    ball.serve(1);
 }
 
 function update(){
