@@ -59,6 +59,12 @@ ball = {
          
          //this allows the ball to bounce when it touches the edge of the field
          if(this.y < 0 || this.y + this.side > height){
+             
+             //this bit of code prevents the ball from going inside the canvas
+             //border when the speed variable is set higher.
+             var offset = this.vel.y < 0 ? 0 - this.y : height - (this.y+this.side);
+             this.y += 2*offset; //twice the offset to allow elastic bounce.
+             
              this.vel.y *=-1;
          }
      },
