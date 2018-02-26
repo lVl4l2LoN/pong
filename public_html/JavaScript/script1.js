@@ -24,6 +24,7 @@ player = {
      y: null,
      width: 20,
      height: 100,
+     score: null,
      
      update: function(){
          if(keystate[upArrow]) this.y -=7;
@@ -40,6 +41,7 @@ ai = {
      y: null,
      width: 20,
      height: 100,
+     score: null,
      
      update: function(){
          
@@ -117,12 +119,19 @@ ball = {
          
          //resets the ball to the middle of the field when the ball is scored
          if(this.x+this.side < 0 ||this.x > width){
-                this.serve(paddle===player ? 1 : -1);               
+                var isplayer = paddle===player;
+                player.score += isplayer ? 0:1;
+                ai.score += isplayer ? 1:0;
+                this.serve(paddle===player ? 1 : -1);
+                
          }
          
      },
      draw: function(){
+         var scoreBoard = player.score + "-" + ai.score;
+         ctx.fillText(scoreBoard,canvas.width/2 - ctx.measureText(scoreBoard).width/2,50);
          ctx.fillRect(this.x,this.y,this.side,this.side);
+         
      }
 };
 
@@ -159,11 +168,14 @@ function main(){
 function init(){
     player.x = player.width;
     player.y = (height-player.height)/2;
+    player.score = 0;
     
     ai.x = width-(player.width+ai.width);
     ai.y = (height-ai.height)/2;
+    ai.score = 0;
     
     ball.serve(1);
+    
 }
 
 function update(){
@@ -187,7 +199,7 @@ function draw(){
     var w = 4;
     var x = (width-w)*0.5;
     var y = 0;
-    var step = height/25 //the number determines how many lines will be drawn as the net
+    var step = height/25; //the number determines how many lines will be drawn as the net
     //at the middle of the field. Higher number means more lines.
     
     while(y < height){
@@ -196,7 +208,11 @@ function draw(){
     }
     
     
+    
+    
     ctx.restore();
+    
+    
 }
 
 main();
