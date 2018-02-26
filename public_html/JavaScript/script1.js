@@ -67,6 +67,27 @@ ball = {
              
              this.vel.y *=-1;
          }
+         
+         //helper function that allows collision when the ball hits the paddle
+         var AABBIntersect = function(ax,ay,aw,ah,bx,by,bw,bh){
+             return ax < bx + bw && ay < by + bh && bx < ax + aw && by < ay + ah;
+         };
+         
+         var paddle = this.vel.x < 0 ? player : ai;
+         
+         
+         if(AABBIntersect(paddle.x,paddle.y,paddle.width,
+         paddle.height,this.x,this.y,this.side,this.side)){
+             
+             //offset
+             this.x = paddle===player? player.x + player.width : ai.x - this.side;
+             
+             var n = (this.y + this.side - paddle.y)/(paddle.height + this.side); 
+             //collision angle of the ball bouncing off the paddle
+             var phi = 0.25*pi*(2*n - 1); // 45 degree collisions
+             this.vel.x = (paddle===player ? 1 : -1)*this.speed*Math.cos(phi);
+             this.vel.y = this.speed*Math.sin(phi);
+         }
      },
      draw: function(){
          ctx.fillRect(this.x,this.y,this.side,this.side);
@@ -113,8 +134,8 @@ function init(){
     ball.x = (width-ball.side)/2;
     ball.y = (height-ball.side)/2;
     ball.vel = {
-        x:0,
-        y: ball.speed
+        x: ball.speed,
+        y: 0
     };
 }
 
