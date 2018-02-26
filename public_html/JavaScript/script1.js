@@ -40,7 +40,13 @@ ai = {
      width: 20,
      height: 100,
      
-     update: function(){},
+     update: function(){
+         
+         //this allows the ai paddle to move to where the ball will land
+         var destinationY = ball.y - (this.height - ball.side)*0.5;
+         this.y += (destinationY-this.y) * 0.1;
+         
+     },
      draw: function(){
          ctx.fillRect(this.x,this.y,this.width,this.height);
      }
@@ -51,7 +57,7 @@ ball = {
      y: null,
      vel:null,
      side:20,
-     speed: 5,
+     speed: 10,
      
      update: function(){
          this.x += this.vel.x;
@@ -83,11 +89,27 @@ ball = {
              this.x = paddle===player? player.x + player.width : ai.x - this.side;
              
              var n = (this.y + this.side - paddle.y)/(paddle.height + this.side); 
-             //collision angle of the ball bouncing off the paddle
+             //collision angle of the ball bouncing off the top or bottom of the paddle
              var phi = 0.25*pi*(2*n - 1); // 45 degree collisions
-             this.vel.x = (paddle===player ? 1 : -1)*this.speed*Math.cos(phi);
-             this.vel.y = this.speed*Math.sin(phi);
+             
+             //this adds the ability to speed up the ball after collision
+             //if the angle is bigger than some value
+             var smash = Math.abs(phi) > 0.2*pi ? 1.5:1;
+             
+             this.vel.x = smash*(paddle===player ? 1 : -1)*this.speed*Math.cos(phi);
+             this.vel.y = smash*this.speed*Math.sin(phi);
          }
+         
+         //resets the ball to the middle of the field when the ball is scored
+         if(this.x+this.side < 0 ||this.x > width){
+            ball.x = (width-ball.side)/2;
+            ball.y = (height-ball.side)/2;
+            ball.vel = {
+                x: (paddle===player ? 1 : -1)*ball.speed,
+                y: 0
+            };
+         }
+         
      },
      draw: function(){
          ctx.fillRect(this.x,this.y,this.side,this.side);
