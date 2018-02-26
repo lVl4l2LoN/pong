@@ -8,3 +8,12 @@ and open the template in the editor.
     Author     : lVl4rl2LoN
 */
 
+canvas{
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    
+}
