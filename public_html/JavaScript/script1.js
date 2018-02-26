@@ -9,6 +9,9 @@ alert("script1.js");
 
 var width = 700, height = 600, pi = Math.PI;
 
+//key codes
+var upArrow = 38; downArrow=40;
+
 //update game state variables
 var canvas, ctx, keystate;
 
@@ -22,7 +25,10 @@ player = {
      width: 20,
      height: 100,
      
-     update: function(){},
+     update: function(){
+         if(keystate[upArrow]) this.y -=7;
+         if(keystate[downArrow]) this.y +=7;
+     },
      draw: function(){
          ctx.fillRect(this.x,this.y,this.width,this.height);
      }
@@ -43,9 +49,19 @@ ai = {
 ball = {
      x: null,
      y: null,
+     vel:null,
      side:20,
+     speed: 5,
      
-     update: function(){},
+     update: function(){
+         this.x += this.vel.x;
+         this.y += this.vel.y;
+         
+         //this allows the ball to bounce when it touches the edge of the field
+         if(this.y < 0 || this.y + this.side > height){
+             this.vel.y *=-1;
+         }
+     },
      draw: function(){
          ctx.fillRect(this.x,this.y,this.side,this.side);
      }
@@ -57,6 +73,16 @@ function main(){
     canvas.height = height;
     ctx = canvas.getContext("2d");
     document.body.appendChild(canvas);
+    
+    keystate = {};
+    
+    document.addEventListener("keydown",function(evt){
+        keystate[evt.keyCode] = true;
+    });
+    
+    document.addEventListener("keyup",function(evt){
+         delete keystate[evt.keyCode];
+    });
     
     init();
     
@@ -80,6 +106,10 @@ function init(){
     
     ball.x = (width-ball.side)/2;
     ball.y = (height-ball.side)/2;
+    ball.vel = {
+        x:0,
+        y: ball.speed
+    };
 }
 
 function update(){
