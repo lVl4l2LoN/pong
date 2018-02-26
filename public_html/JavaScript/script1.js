@@ -89,9 +89,30 @@ function update(){
 }
 
 function draw(){
+    
+    ctx.fillRect(0,0, width,height);
+    
+    ctx.save();
+    ctx.fillStyle = "#fff";
+    
     ball.draw();
     player.draw();
     ai.draw();
+    
+    //creating the net at the middle of the field
+    var w = 4;
+    var x = (width-w)*0.5;
+    var y = 0;
+    var step = height/25 //the number determines how many lines will be drawn as the net
+    //at the middle of the field. Higher number means more lines.
+    
+    while(y < height){
+        ctx.fillRect(x,y+step*0.25, w, step*0.50);
+        y += step;
+    }
+    
+    
+    ctx.restore();
 }
 
 main();
